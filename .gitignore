@@ -45,6 +45,10 @@
 #vscode
 *.vscode/
 
+#vs
+*.vs/
+*x64/
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd

@@ -113,6 +113,11 @@ int main(void)
     if (!glfwInit())
         return -1;
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
@@ -146,10 +151,14 @@ int main(void)
         2, 3, 0
     };
 
+    unsigned int vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
     unsigned int buffer;
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), pos, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), pos, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
     glEnableVertexAttribArray(0);
@@ -202,6 +211,13 @@ int main(void)
     }
     glUniform4f(location, 1.0f, 0.0f, 0.0f, 1.0f);
 
+    //unbind
+    glBindVertexArray(0);
+    glUseProgram(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
     float r = 0.0f;
     float increment = 0.05f;
 
@@ -211,7 +227,24 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
         
+        /* 绑定着色器 */
+        glUseProgram(shader);
+        /* 设定统一变量 */
         glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
+
+#if 0
+        /* 设定顶点缓冲区 */
+        glBindBuffer(GL_ARRAY_BUFFER, buffer);
+        /* 设定顶点缓冲区的布局 */
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+        glEnableVertexAttribArray(0);
+#else 
+        /* 绑定顶点数组 */
+        glBindVertexArray(vao);
+#endif
+
+        /* 绑定索引缓冲区 */
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         //*****1*****
         //glBegin(GL_TRIANGLES);
 

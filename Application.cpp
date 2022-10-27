@@ -5,6 +5,10 @@
 #include <string>
 #include <sstream>
 
+#include "Renderer.h"
+
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 struct ShaderProgramSource
 {
@@ -138,145 +142,154 @@ int main(void)
     }
 
     std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
-
-    float pos[12] = {
-        -0.5f,  -0.5f,  //0
-         0.5f,  -0.5f,  //1
-         0.5f,   0.5f,  //2
-        -0.5f,   0.5f   //3
-    };
-
-    unsigned int indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
-
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    unsigned int buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), pos, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-    glEnableVertexAttribArray(0);
-
-    unsigned int ibo;   //index buffer object
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6  * sizeof(unsigned int), indices, GL_STATIC_DRAW);
-
-    /**********3***********/
-    //std::string vertexshader =
-    //    "#version 330 core\n"
-    //    "\n"
-    //    "layout(location = 0) in vec4 position;\n"
-    //    "\n"
-    //    "void main()\n"
-    //    "{\n"
-    //    "   gl_Position = position;\n"
-    //    "}\n";
-
-    //std::string fragmentshader =
-    //    "#version 330 core\n"
-    //    "\n"
-    //    "layout(location = 0) out vec4 color;\n"
-    //    "\n"
-    //    "void main()\n"
-    //    "{\n"
-    //    "   color = vec4(1.0, 0.0, 0.0, 1.0);\n"
-    //    "}\n";
-
-    //unsigned int shader = CreateShader(vertexshader, fragmentshader);
-    //glUseProgram(shader);
-
-
-    ShaderProgramSource source = ParseShader("Basic.shader");
-
-    std::cout << "VertexSource: " << std::endl;
-    std::cout << source.VertexSource << std::endl;
-    std::cout << "FragmentSource: " << std::endl;
-    std::cout << source.FragmentSource << std::endl;
-    
-    unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
-    glUseProgram(shader);
-
-    int location = glGetUniformLocation(shader, "u_Color");
-    if (location == -1)
     {
-        std::cout << "glGetUniformLocation error " << std::endl;
-        return -1;
-    }
-    glUniform4f(location, 1.0f, 0.0f, 0.0f, 1.0f);
+        float pos[12] = {
+            -0.5f,  -0.5f,  //0
+             0.5f,  -0.5f,  //1
+             0.5f,   0.5f,  //2
+            -0.5f,   0.5f   //3
+        };
 
-    //unbind
-    glBindVertexArray(0);
-    glUseProgram(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        unsigned int indices[] = {
+            0, 1, 2,
+            2, 3, 0
+        };
 
+        unsigned int vao;
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
 
-    float r = 0.0f;
-    float increment = 0.05f;
-
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
-        
-        /* 绑定着色器 */
-        glUseProgram(shader);
-        /* 设定统一变量 */
-        glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
-
-#if 0
-        /* 设定顶点缓冲区 */
+        /*
+        unsigned int buffer;
+        glGenBuffers(1, &buffer);
         glBindBuffer(GL_ARRAY_BUFFER, buffer);
-        /* 设定顶点缓冲区的布局 */
+        glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), pos, GL_STATIC_DRAW);
+        */
+        VertexBuffer vb(pos, 4 * 2 * sizeof(float));
+
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
         glEnableVertexAttribArray(0);
+
+        /*
+        unsigned int ibo;   //index buffer object
+        glGenBuffers(1, &ibo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6  * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+        */
+        IndexBuffer ib(indices, 6);
+
+        /**********3***********/
+        //std::string vertexshader =
+        //    "#version 330 core\n"
+        //    "\n"
+        //    "layout(location = 0) in vec4 position;\n"
+        //    "\n"
+        //    "void main()\n"
+        //    "{\n"
+        //    "   gl_Position = position;\n"
+        //    "}\n";
+
+        //std::string fragmentshader =
+        //    "#version 330 core\n"
+        //    "\n"
+        //    "layout(location = 0) out vec4 color;\n"
+        //    "\n"
+        //    "void main()\n"
+        //    "{\n"
+        //    "   color = vec4(1.0, 0.0, 0.0, 1.0);\n"
+        //    "}\n";
+
+        //unsigned int shader = CreateShader(vertexshader, fragmentshader);
+        //glUseProgram(shader);
+
+
+        ShaderProgramSource source = ParseShader("Basic.shader");
+
+        std::cout << "VertexSource: " << std::endl;
+        std::cout << source.VertexSource << std::endl;
+        std::cout << "FragmentSource: " << std::endl;
+        std::cout << source.FragmentSource << std::endl;
+
+        unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
+        glUseProgram(shader);
+
+        int location = glGetUniformLocation(shader, "u_Color");
+        if (location == -1)
+        {
+            std::cout << "glGetUniformLocation error " << std::endl;
+            return -1;
+        }
+        glUniform4f(location, 1.0f, 0.0f, 0.0f, 1.0f);
+
+        //unbind
+        glBindVertexArray(0);
+        glUseProgram(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+        float r = 0.0f;
+        float increment = 0.05f;
+
+        /* Loop until the user closes the window */
+        while (!glfwWindowShouldClose(window))
+        {
+            /* Render here */
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            /* 绑定着色器 */
+            glUseProgram(shader);
+            /* 设定统一变量 */
+            glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
+
+#if 0
+            /* 设定顶点缓冲区 */
+            glBindBuffer(GL_ARRAY_BUFFER, buffer);
+            /* 设定顶点缓冲区的布局 */
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+            glEnableVertexAttribArray(0);
 #else 
-        /* 绑定顶点数组 */
-        glBindVertexArray(vao);
+            /* 绑定顶点数组 */
+            glBindVertexArray(vao);
 #endif
 
-        /* 绑定索引缓冲区 */
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        //*****1*****
-        //glBegin(GL_TRIANGLES);
+            /* 绑定索引缓冲区 */
+            //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+            ib.Bind();
+            //*****1*****
+            //glBegin(GL_TRIANGLES);
 
-        //glVertex2f(-0.5f, -0.5f);
-        //glVertex2f(0.0f, 0.5f);
-        //glVertex2f(0.5f, -0.5f);
-        //glEnd();
+            //glVertex2f(-0.5f, -0.5f);
+            //glVertex2f(0.0f, 0.5f);
+            //glVertex2f(0.5f, -0.5f);
+            //glEnd();
 
-        //*****2*****
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+            //*****2*****
+            //glDrawArrays(GL_TRIANGLES, 0, 6);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
-        if (r > 1.0f)
-        {
-            increment = -0.05f;
+            if (r > 1.0f)
+            {
+                increment = -0.05f;
+            }
+            else if (r < 0.0f)
+            {
+                increment = 0.05f;
+            }
+            r += increment;
+
+            //std::cout << "r " << r << std::endl;
+
+            /* Swap front and back buffers */
+            glfwSwapBuffers(window);
+
+            /* Poll for and process events */
+            glfwPollEvents();
         }
-        else if (r < 0.0f)
-        {
-            increment = 0.05f;
-        }
-        r += increment;
-
-        //std::cout << "r " << r << std::endl;
-
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
+        glDeleteProgram(shader);
     }
-
+    //如果没有上面这个作用域，glfwTerminate之后才会调用析构函数，但这时opengl上下文已经没有了
     glfwTerminate();
-    glDeleteProgram(shader);
+    
     return 0;
 }

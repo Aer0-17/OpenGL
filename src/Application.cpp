@@ -9,6 +9,7 @@
 
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
 
 //test gitlab
 
@@ -157,9 +158,9 @@ int main(void)
             2, 3, 0
         };
 
-        unsigned int vao;
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
+        //unsigned int vao;
+        //glGenVertexArrays(1, &vao);
+        //glBindVertexArray(vao);
 
         /*
         unsigned int buffer;
@@ -167,10 +168,14 @@ int main(void)
         glBindBuffer(GL_ARRAY_BUFFER, buffer);
         glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), pos, GL_STATIC_DRAW);
         */
+        VertexArray va;
         VertexBuffer vb(pos, 4 * 2 * sizeof(float));
+		VertexBufferLayout layout;
+		layout.Push<float>(2);
+        va.AddBuffer(vb, layout);
 
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-        glEnableVertexAttribArray(0);
+        //glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+        //glEnableVertexAttribArray(0);
 
         /*
         unsigned int ibo;   //index buffer object
@@ -205,7 +210,7 @@ int main(void)
         //glUseProgram(shader);
 
 
-        ShaderProgramSource source = ParseShader("Basic.shader");
+        ShaderProgramSource source = ParseShader("res\\shaders\\Basic.shader");
 
         std::cout << "VertexSource: " << std::endl;
         std::cout << source.VertexSource << std::endl;
@@ -252,7 +257,8 @@ int main(void)
             glEnableVertexAttribArray(0);
 #else 
             /* 绑定顶点数组 */
-            glBindVertexArray(vao);
+            //glBindVertexArray(vao);
+            va.Bind();
 #endif
 
             /* 绑定索引缓冲区 */

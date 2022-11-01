@@ -10,9 +10,9 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include "Shader.h"
 
-//test gitlab
-
+#if 0
 struct ShaderProgramSource
 {
     std::string VertexSource;
@@ -112,6 +112,8 @@ static int CreateShader(const std::string& vertexShader, const std::string& frag
     return program;
 }
 
+#endif
+
 int main(void)
 {
     GLFWwindow* window;
@@ -209,7 +211,7 @@ int main(void)
         //unsigned int shader = CreateShader(vertexshader, fragmentshader);
         //glUseProgram(shader);
 
-
+        /*
         ShaderProgramSource source = ParseShader("res\\shaders\\Basic.shader");
 
         std::cout << "VertexSource: " << std::endl;
@@ -219,7 +221,11 @@ int main(void)
 
         unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
         glUseProgram(shader);
+        */
+		Shader shader("res\\shaders\\Basic.shader");
+		shader.Bind();
 
+        /*
         int location = glGetUniformLocation(shader, "u_Color");
         if (location == -1)
         {
@@ -227,13 +233,18 @@ int main(void)
             return -1;
         }
         glUniform4f(location, 1.0f, 0.0f, 0.0f, 1.0f);
+        */
+        shader.SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
 
         //unbind
         //glBindVertexArray(0);
         va.UnBind();
-        glUseProgram(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        //glUseProgram(0);
+        //glBindBuffer(GL_ARRAY_BUFFER, 0);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        shader.UnBind();
+        vb.UnBind();
+        ib.UnBind();
 
 
         float r = 0.0f;
@@ -245,10 +256,15 @@ int main(void)
             /* Render here */
             glClear(GL_COLOR_BUFFER_BIT);
 
+#if 0
             /* 绑定着色器 */
             glUseProgram(shader);
             /* 设定统一变量 */
             glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
+#else
+            shader.Bind();
+            shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
+#endif
 
 #if 0
             /* 设定顶点缓冲区 */
@@ -295,7 +311,7 @@ int main(void)
             /* Poll for and process events */
             glfwPollEvents();
         }
-        glDeleteProgram(shader);
+        //glDeleteProgram(shader);
     }
     //如果没有上面这个作用域，glfwTerminate之后才会调用析构函数，但这时opengl上下文已经没有了
     glfwTerminate();

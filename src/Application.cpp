@@ -11,6 +11,7 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "VertexBufferLayout.h"
 
 #if 0
 struct ShaderProgramSource
@@ -250,11 +251,14 @@ int main(void)
         float r = 0.0f;
         float increment = 0.05f;
 
+        Renderer renderer;
+
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             /* Render here */
-            glClear(GL_COLOR_BUFFER_BIT);
+            //glClear(GL_COLOR_BUFFER_BIT);
+            renderer.Clear();
 
 #if 0
             /* 绑定着色器 */
@@ -275,12 +279,12 @@ int main(void)
 #else 
             /* 绑定顶点数组 */
             //glBindVertexArray(vao);
-            va.Bind();
+            //va.Bind();
 #endif
 
             /* 绑定索引缓冲区 */
             //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-            ib.Bind();
+            //ib.Bind();
             //*****1*****
             //glBegin(GL_TRIANGLES);
 
@@ -291,7 +295,8 @@ int main(void)
 
             //*****2*****
             //glDrawArrays(GL_TRIANGLES, 0, 6);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+            //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+            renderer.Draw(va, ib, shader);
 
             if (r > 1.0f)
             {

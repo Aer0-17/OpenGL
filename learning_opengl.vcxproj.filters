@@ -14,6 +14,12 @@
     <Filter Include="src">
       <UniqueIdentifier>{f61906e3-a4df-4199-a4d6-88f41f7cc8c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\vendor">
+      <UniqueIdentifier>{7842a461-79de-4376-9f98-f576e8a53aac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\vendor\stb_image">
+      <UniqueIdentifier>{4cbd3249-7b16-4e99-b15d-f475d2fba8ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader">
@@ -39,6 +45,12 @@
     <ClCompile Include="src\Shader.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="vendor\stb_image\stb_image.cpp">
+      <Filter>src\vendor\stb_image</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\IndexBuffer.h">
@@ -57,6 +69,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Shader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\stb_image\stb_image.h">
+      <Filter>src\vendor\stb_image</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Texture.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

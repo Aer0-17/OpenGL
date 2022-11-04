@@ -14,6 +14,9 @@
 #include "VertexBufferLayout.h"
 #include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #if 0
 struct ShaderProgramSource
 {
@@ -130,7 +133,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(500, 500, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -194,6 +197,9 @@ int main(void)
         */
         IndexBuffer ib(indices, 6);
 
+
+        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
         /**********3***********/
         //std::string vertexshader =
         //    "#version 330 core\n"
@@ -242,6 +248,8 @@ int main(void)
         glUniform4f(location, 1.0f, 0.0f, 0.0f, 1.0f);
         */
         shader.SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
+
+        shader.SetUniformMat4f("u_MVP", proj);
 
         Texture texture("res/textures/ChernoLogo.png");
         texture.Bind();

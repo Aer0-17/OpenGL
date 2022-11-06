@@ -17,6 +17,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 #if 0
 struct ShaderProgramSource
 {
@@ -197,12 +201,14 @@ int main(void)
         */
         IndexBuffer ib(indices, 6);
 
+        glm::vec3 tranlation(200, 200, 0);
+
         //根据窗口分辨率把它改成了每个像素 x在0-960 y在0-540
         glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
         glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200, 200, 0));
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), tranlation);
 
-        glm::mat4 mvp = proj * view * model;
+		glm::mat4 mvp = proj * view * model;
 
         /**********3***********/
         //std::string vertexshader =
@@ -240,7 +246,7 @@ int main(void)
         glUseProgram(shader);
         */
 		Shader shader("res\\shaders\\Basic.shader");
-		shader.Bind();
+	    shader.Bind();
 
         /*
         int location = glGetUniformLocation(shader, "u_Color");
@@ -275,12 +281,31 @@ int main(void)
 
         Renderer renderer;
 
+        // Setup Dear ImGui context
+        ImGui::CreateContext();
+        // Setup Platform/Renderer backends
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        // Setup Dear ImGui style
+        ImGui::StyleColorsDark();
+
+		// 需要指定glsl版本, 也就是shader中的version
+		const char* glsl_version = "#version 330";
+		ImGui_ImplOpenGL3_Init(glsl_version);
+
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             /* Render here */
             //glClear(GL_COLOR_BUFFER_BIT);
             renderer.Clear();
+
+			// Start the Dear ImGui frame
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			model = glm::translate(glm::mat4(1.0f), tranlation);
+			mvp = proj * view * model;
 
 #if 0
             /* 绑定着色器 */
@@ -290,6 +315,7 @@ int main(void)
 #else
             shader.Bind();
             shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
+            shader.SetUniformMat4f("u_MVP", mvp);
 #endif
 
 #if 0
@@ -332,6 +358,16 @@ int main(void)
 
             //std::cout << "r " << r << std::endl;
 
+			{
+				ImGui::Begin("ImGui");
+                ImGui::SliderFloat3("Tranlation", &tranlation.x, 0.0f, 960.0f);
+                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+				ImGui::End();
+			}
+			// Rendering
+			ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
             /* Swap front and back buffers */
             glfwSwapBuffers(window);
 
@@ -340,6 +376,14 @@ int main(void)
         }
         //glDeleteProgram(shader);
     }
+
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	glfwDestroyWindow(window);
+
     //如果没有上面这个作用域，glfwTerminate之后才会调用析构函数，但这时opengl上下文已经没有了
     glfwTerminate();
     

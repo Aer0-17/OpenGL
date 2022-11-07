@@ -158,10 +158,10 @@ int main(void)
     std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
     {
         float pos[] = {
-            100.0f,  100.0f, 0.0f, 0.0f,  //0
-            200.0f,  100.0f, 1.0f, 0.0f,  //1
-            200.0f,  200.0f, 1.0f, 1.0f,  //2
-            100.0f,  200.0f, 0.0f, 1.0f   //3
+            -50.0f, -50.0f, 0.0f, 0.0f,  //0
+             50.0f, -50.0f, 1.0f, 0.0f,  //1
+             50.0f,  50.0f, 1.0f, 1.0f,  //2
+            -50.0f,  50.0f, 0.0f, 1.0f   //3
         };
 
         unsigned int indices[] = {
@@ -201,12 +201,13 @@ int main(void)
         */
         IndexBuffer ib(indices, 6);
 
-        glm::vec3 tranlation(200, 200, 0);
+        glm::vec3 tranlationA(200, 200, 0);
+        glm::vec3 tranlationB(400, 200, 0);
 
         //根据窗口分辨率把它改成了每个像素 x在0-960 y在0-540
         glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
-		glm::mat4 model = glm::translate(glm::mat4(1.0f), tranlation);
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), tranlationA);
 
 		glm::mat4 mvp = proj * view * model;
 
@@ -304,47 +305,25 @@ int main(void)
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
-			model = glm::translate(glm::mat4(1.0f), tranlation);
-			mvp = proj * view * model;
+            
+            {
+                model = glm::translate(glm::mat4(1.0f), tranlationA);
+                mvp = proj * view * model;
+                shader.Bind();
+                shader.SetUniformMat4f("u_MVP", mvp);
 
-#if 0
-            /* 绑定着色器 */
-            glUseProgram(shader);
-            /* 设定统一变量 */
-            glUniform4f(location, r, 0.3f, 0.8f, 1.0f);
-#else
-            shader.Bind();
-            shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-            shader.SetUniformMat4f("u_MVP", mvp);
-#endif
+                renderer.Draw(va, ib, shader);
+            }
 
-#if 0
-            /* 设定顶点缓冲区 */
-            glBindBuffer(GL_ARRAY_BUFFER, buffer);
-            /* 设定顶点缓冲区的布局 */
-            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-            glEnableVertexAttribArray(0);
-#else 
-            /* 绑定顶点数组 */
-            //glBindVertexArray(vao);
-            //va.Bind();
-#endif
+			{
+				model = glm::translate(glm::mat4(1.0f), tranlationB);
+				mvp = proj * view * model;
+                shader.Bind();
+				shader.SetUniformMat4f("u_MVP", mvp);
 
-            /* 绑定索引缓冲区 */
-            //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-            //ib.Bind();
-            //*****1*****
-            //glBegin(GL_TRIANGLES);
+				renderer.Draw(va, ib, shader);
+			}
 
-            //glVertex2f(-0.5f, -0.5f);
-            //glVertex2f(0.0f, 0.5f);
-            //glVertex2f(0.5f, -0.5f);
-            //glEnd();
-
-            //*****2*****
-            //glDrawArrays(GL_TRIANGLES, 0, 6);
-            //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-            renderer.Draw(va, ib, shader);
 
             if (r > 1.0f)
             {
@@ -360,7 +339,8 @@ int main(void)
 
 			{
 				ImGui::Begin("ImGui");
-                ImGui::SliderFloat3("Tranlation", &tranlation.x, 0.0f, 960.0f);
+                ImGui::SliderFloat3("Tranlation A", &tranlationA.x, 0.0f, 960.0f);
+                ImGui::SliderFloat3("Tranlation B", &tranlationB.x, 0.0f, 960.0f);
                 ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 				ImGui::End();
 			}

@@ -15,15 +15,15 @@ namespace test
 		m_Translation(glm::vec3(0, 0, 0))
 	{
 		float positions[] = {
-			100.0f, 100.0f, //0
-			200.0f, 100.0f, //1
-			200.0f, 200.0f, //2
-			100.0f, 200.0f, //3
+			100.0f, 100.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,//0
+			200.0f, 100.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,//1
+			200.0f, 200.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,//2
+			100.0f, 200.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,//3
 
-			300.0f, 100.0f, //4
-			400.0f, 100.0f, //5
-			400.0f, 200.0f, //6
-			300.0f, 200.0f, //7
+			300.0f, 100.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,//4
+			400.0f, 100.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,//5
+			400.0f, 200.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,//6
+			300.0f, 200.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f//7
 		};
 		unsigned int indices[] = {
 			0, 1, 2,
@@ -35,9 +35,11 @@ namespace test
 
 		m_VAO = std::make_unique<VertexArray>();
 
-		m_VertexBuffer = std::make_unique<VertexBuffer>(positions, 8 * 2 * sizeof(float));
+		m_VertexBuffer = std::make_unique<VertexBuffer>(positions, 8 * 8 * sizeof(float));
 		VertexBufferLayout layout;
 		layout.Push<float>(2);
+		layout.Push<float>(2);
+		layout.Push<float>(4);
 		m_VAO->AddBuffer(*m_VertexBuffer, layout);
 
 		m_IndexBuffer = std::make_unique<IndexBuffer>(indices, 12);

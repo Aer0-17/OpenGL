@@ -483,5 +483,8 @@
     <Image Include="res\textures\gold-dollar.png">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\textures\HazelLogo.png">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

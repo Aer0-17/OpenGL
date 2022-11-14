@@ -15,15 +15,15 @@ namespace test
 		m_Translation(glm::vec3(0, 0, 0))
 	{
 		float positions[] = {
-			100.0f, 100.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,//0
-			200.0f, 100.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,//1
-			200.0f, 200.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,//2
-			100.0f, 200.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,//3
+			100.0f, 100.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,//0
+			200.0f, 100.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,//1
+			200.0f, 200.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,//2
+			100.0f, 200.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,//3
 
-			300.0f, 100.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,//4
-			400.0f, 100.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,//5
-			400.0f, 200.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,//6
-			300.0f, 200.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f//7
+			300.0f, 100.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,//4
+			400.0f, 100.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,//5
+			400.0f, 200.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,//6
+			300.0f, 200.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,//7
 		};
 		unsigned int indices[] = {
 			0, 1, 2,
@@ -33,19 +33,33 @@ namespace test
 			6, 7, 4
 		};
 
+		GLCALL(glEnable(GL_BLEND));
+		GLCALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
 		m_VAO = std::make_unique<VertexArray>();
 
-		m_VertexBuffer = std::make_unique<VertexBuffer>(positions, 8 * 8 * sizeof(float));
+		m_VertexBuffer = std::make_unique<VertexBuffer>(positions, 11 * 8 * sizeof(float));
 		VertexBufferLayout layout;
-		layout.Push<float>(2);
-		layout.Push<float>(2);
-		layout.Push<float>(4);
+		layout.Push<float>(4);		//坐标x,y,z,w
+		layout.Push<float>(4);		//颜色数据
+		layout.Push<float>(2);		//纹理坐标
+		layout.Push<float>(1);		//纹理插槽
 		m_VAO->AddBuffer(*m_VertexBuffer, layout);
 
 		m_IndexBuffer = std::make_unique<IndexBuffer>(indices, 12);
 
 		m_Shader = std::make_unique<Shader>("res\\shaders\\Batch.shader");
 		m_Shader->Bind();
+
+		m_Texture[0] = std::make_unique<Texture>("res/textures/ChernoLogo.png");
+		m_Texture[1] = std::make_unique<Texture>("res/textures/HazelLogo.png");
+
+		for (size_t i = 0; i < 2; i++)
+		{
+			m_Texture[i]->Bind(i);
+		}
+		int samplers[2] = { 0, 1 };
+		m_Shader->SetUniform1iv("u_Textures", 2, samplers);
 
 	}
 
